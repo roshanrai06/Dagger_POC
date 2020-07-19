@@ -25,7 +25,7 @@ class QuestionsListActivity : BaseActivity() {
             val call = service.lastActiveQuestions(2)
             call?.enqueue(object : Callback<QuestionsListResponseSchema?> {
                 override fun onFailure(call: Call<QuestionsListResponseSchema?>, t: Throwable) {
-                    Log.d("Failure", t.message)
+                    Log.d("Failure", t.localizedMessage)
 
                 }
 
