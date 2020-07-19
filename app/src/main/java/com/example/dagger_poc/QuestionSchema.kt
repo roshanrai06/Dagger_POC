@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class QuestionSchema {
     @SerializedName("title")
-    private val mTitle: String? = null
+     val mTitle: String? = null
 
     @SerializedName("question_id")
     private val mId: String? = null

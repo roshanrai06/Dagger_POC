@@ -1,8 +1,8 @@
 package com.example.dagger_poc
 
 import android.os.Bundle
-import android.util.Log
-import kotlinx.android.synthetic.main.activity_questions_list.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -10,6 +10,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class QuestionsListActivity : BaseActivity() {
+    private lateinit var recyclerView: RecyclerView
+    private var viewAdapter: QuestionsAdapter? = null
+    private lateinit var viewManager: RecyclerView.LayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,25 +24,34 @@ class QuestionsListActivity : BaseActivity() {
         val service: StackOverFlowAPI =
             retrofit.create<StackOverFlowAPI>(StackOverFlowAPI::class.java)
 
-        text.setOnClickListener {
-            val call = service.lastActiveQuestions(2)
-            call?.enqueue(object : Callback<QuestionsListResponseSchema?> {
-                override fun onFailure(call: Call<QuestionsListResponseSchema?>, t: Throwable) {
-                    Log.d("Failure", t.localizedMessage)
-
-                }
-
-                override fun onResponse(
-                    call: Call<QuestionsListResponseSchema?>,
-                    response: Response<QuestionsListResponseSchema?>
-                ) {
-                    Log.d("Response", response.message())
-                }
-
-            })
 
 
-        }
+        viewManager = LinearLayoutManager(this)
+        recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true)
+
+        // use a linear layout manager
+        recyclerView.layoutManager = viewManager
+
+
+        val call = service.lastActiveQuestions(2)
+        call?.enqueue(object : Callback<QuestionsListResponseSchema?> {
+            override fun onFailure(call: Call<QuestionsListResponseSchema?>, t: Throwable) {
+
+
+            }
+
+            override fun onResponse(
+                call: Call<QuestionsListResponseSchema?>,
+                response: Response<QuestionsListResponseSchema?>
+            ) {
+                viewAdapter = response.body()?.getQuestions()?.let { QuestionsAdapter(it) }
+                recyclerView.adapter = viewAdapter
+            }
+
+        })
 
 
     }
